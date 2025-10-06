@@ -169,24 +169,24 @@ async function run (parameters:any){
         core.info('---- DEBUG OUTPUT END ----')
     }
 
+    const { DefaultArtifactClient } = require('@actions/artifact');
+    const artifactV1 = require('@actions/artifact-v1');
+    let artifactClient;
+
+    if (platformType === 'ENTERPRISE') {
+        artifactClient = artifactV1.create();
+        core.info(`Initialized the artifact object using version V1.`);
+    } else {
+        artifactClient = new DefaultArtifactClient();
+        core.info(`Initialized the artifact object using version V2.`);
+    }
+
     //check if results files exists and if so store them as artifacts
     if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
         core.info('Results files exist - storing as artifact')
     
         
         //store output files as artifacts
-        const { DefaultArtifactClient } = require('@actions/artifact');
-        const artifactV1 = require('@actions/artifact-v1');
-        let artifactClient;
-
-        if (platformType === 'ENTERPRISE') {
-            artifactClient = artifactV1.create();
-            core.info(`Using V1 : ${artifactClient}`);
-        } else {
-            artifactClient = new DefaultArtifactClient();
-            core.info(`Using V2 : ${artifactClient}`);
-        }
-
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.json_output_file,
@@ -201,7 +201,6 @@ async function run (parameters:any){
         }
 
         try {
-            core.info('Artifact uploading 2 1')
             const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
             core.info('Artifact upload result:')
             core.info(uploadResult)
@@ -235,18 +234,6 @@ async function run (parameters:any){
             core.info('Error creating empty results files')
         }
 
-        const { DefaultArtifactClient } = require('@actions/artifact');
-        const artifactV1 = require('@actions/artifact-v1');
-        let artifactClient;
-
-        if (platformType === 'ENTERPRISE') {
-            artifactClient = artifactV1.create();
-            core.info(`Using V1 : ${artifactClient}`);
-        } else {
-            artifactClient = new DefaultArtifactClient();
-            core.info(`Using V2 : ${artifactClient}`);
-        }
-
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.filtered_json_output_file
@@ -259,7 +246,6 @@ async function run (parameters:any){
         }
 
         try {
-            core.info('Artifact uploading 2')
             const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
             core.info('Artifact upload result:')
             core.info(uploadResult)
