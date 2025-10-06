@@ -122,9 +122,6 @@ parameters['artifact_name'] = artifact_name
 const workflow_app = core.getInput('workflow_app', {required: false} );
 
 const platformType = core.getInput('platformType', {required: false} );
-parameters['platformType'] = platformType
-
-
 
 
 async function run (parameters:any){
@@ -182,7 +179,7 @@ async function run (parameters:any){
         const artifactV1 = require('@actions/artifact-v1');
         let artifactClient;
 
-        if (parameters?.platformType === 'ENTERPRISE') {
+        if (platformType === 'ENTERPRISE') {
             artifactClient = artifactV1.create();
             core.info(`Using V1 : ${artifactClient}`);
         } else {
@@ -242,7 +239,7 @@ async function run (parameters:any){
         const artifactV1 = require('@actions/artifact-v1');
         let artifactClient;
 
-        if (parameters?.platformType === 'ENTERPRISE') {
+        if (platformType === 'ENTERPRISE') {
             artifactClient = artifactV1.create();
             core.info(`Using V1 : ${artifactClient}`);
         } else {
